@@ -1,0 +1,188 @@
+package com.jawalek.HomeAutomationApp;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
+public class HomeAutomationActivity extends Activity {
+    /** Called when the activity is first created. */
+Button b;
+ToggleButton t1, t2, t3, t4, t5;
+StringBuilder sb;
+SharedPreferences sp;
+String prefrence;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        sb = new StringBuilder();
+        prefrence = new String("MyPref");
+        sp = getSharedPreferences(prefrence, MODE_PRIVATE);
+        t1 = (ToggleButton) findViewById(R.id.toggleButton1);
+        t1.setChecked(sp.getBoolean("pin4", false));
+        t2 = (ToggleButton) findViewById(R.id.toggleButton2);
+        t2.setChecked(sp.getBoolean("pin5", false));
+        t3 = (ToggleButton) findViewById(R.id.toggleButton3);
+        t3.setChecked(sp.getBoolean("pin6", false));
+        t4 = (ToggleButton) findViewById(R.id.toggleButton4);
+        t4.setChecked(sp.getBoolean("pin7", false));
+        t5 = (ToggleButton) findViewById(R.id.toggleButton5);
+        t5.setChecked(sp.getBoolean("pin8", false));
+        b = (Button) findViewById(R.id.button1);
+        b.setOnClickListener(new View.OnClickListener() {
+public void onClick(View v) {
+// TODO Auto-generated method stub
+SharedPreferences.Editor editor = sp.edit();
+if(t1.isChecked())
+{
+sb.append("40");
+editor.putBoolean("pin4", true);
+}
+else
+{
+sb.append("41");
+editor.putBoolean("pin4", false);
+}
+if(t2.isChecked())
+{
+sb.append("50");
+editor.putBoolean("pin5", true);
+}
+else
+{
+sb.append("51");
+editor.putBoolean("pin5", false);
+}
+if(t3.isChecked())
+{
+sb.append("60");
+editor.putBoolean("pin6", true);
+}
+else
+{
+sb.append("61");
+editor.putBoolean("pin6", false);
+}
+if(t4.isChecked())
+{
+sb.append("70");
+editor.putBoolean("pin7", true);
+}
+else
+{
+sb.append("71");
+editor.putBoolean("pin7", false);
+}
+if(t5.isChecked())
+{
+sb.append("80");
+editor.putBoolean("pin8", true);
+}
+else
+{
+sb.append("81");
+editor.putBoolean("pin8", false);
+}
+editor.commit();
+String url = "tel://+91"+sp.getString("mno", "9892057933")+","+sb.toString();
+Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse(url));
+startActivity(intent);
+}
+});
+
+    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.mainmenu, menu);
+    return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+    case R.id.mobile:
+    final Dialog dialog = new Dialog(this);
+dialog.setContentView(R.layout.mobilenumber);
+dialog.setTitle("Change Mobile Number");
+final EditText et = (EditText) dialog.findViewById(R.id.editText1);
+Button add = (Button) dialog.findViewById(R.id.ok);
+add.setOnClickListener(new View.OnClickListener() {
+public void onClick(View v) {
+// TODO Auto-generated method stub
+SharedPreferences.Editor editor = sp.edit();
+editor.putString("mno", et.getEditableText().toString());
+editor.commit();
+dialog.cancel();
+}
+});
+Button cancel = (Button) dialog.findViewById(R.id.cancel);
+cancel.setOnClickListener(new View.OnClickListener() {
+public void onClick(View v) {
+// TODO Auto-generated method stub
+dialog.cancel();
+}
+});
+dialog.setCancelable(false);
+dialog.show();
+    return true;
+
+    case R.id.test:
+    Toast.makeText(this, "Testing",
+            Toast.LENGTH_SHORT).show();
+    String num = "012345";
+    String url = "tel://+91"+sp.getString("mno", "9819238107")+","+num;
+Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse(url));
+startActivity(intent);
+    return true;
+
+    case R.id.exit:
+    try{
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setMessage("Are you sure you want to exit")
+    .setCancelable(false)
+    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+
+    public void onClick(DialogInterface dialog, int which) {
+    // TODO Auto-generated method stub
+    finish();
+    System.exit(0);
+
+    }
+    })
+    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+
+    public void onClick(DialogInterface dialog, int which) {
+    // TODO Auto-generated method stub
+    dialog.cancel();
+
+    }
+    });
+    AlertDialog alert = builder.create();
+    alert.show();
+
+    }
+
+    catch(Exception e){
+    Toast.makeText(getBaseContext(),e.getMessage(), Toast.LENGTH_LONG).show();
+    }
+    return true;
+    default:
+    return super.onOptionsItemSelected(item);
+    }
+    }
+}
